@@ -246,7 +246,7 @@
   <section class="ecran" id="ecran3" aria-labelledby="t3">
     <div class="conteneur etroit">
       <h2 id="t3">Vous, et le propriétaire</h2>
-      <p class="aide">Vos coordonnées servent à vous rappeler et à vous verser la prime. Elles ne sont jamais communiquées à qui que ce soit.</p>
+      <p class="aide">Vos coordonnées servent à vous tenir au courant et à vous verser la prime. Elles ne servent à rien d'autre.</p>
 
       <div class="champ">
         <label for="prenom">Votre prénom</label>
@@ -273,27 +273,10 @@
         <input type="text" id="residence" name="residence" placeholder="Résidence des Tilleuls, Antony">
       </div>
 
-      <div class="champ">
-        <fieldset>
-          <legend class="legende">Le propriétaire, comment fait-on&nbsp;?</legend>
-          <span class="note">C'est vous qui décidez. Les deux réponses ouvrent droit à la prime.</span>
-          <div class="empile">
-            <input type="radio" name="proprio" id="p-discret" value="discret">
-            <label for="p-discret">
-              <b>Contactez-le sans me citer</b>
-              <span>Nous ne prononçons jamais votre nom et nous trouvons une autre manière d'entrer en contact. Vous restez complètement en retrait.</span>
-            </label>
-            <input type="radio" name="proprio" id="p-accord" value="accord">
-            <label for="p-accord">
-              <b>Je lui en ai parlé, il est d'accord pour être contacté</b>
-              <span>Vous nous transmettez son prénom et son numéro. Nous l'appelons en disant d'où vient l'information.</span>
-            </label>
-          </div>
-        </fieldset>
-        <div class="erreur" id="err-proprio">Choisissez comment nous devons procéder.</div>
-      </div>
+      <div>
+        <span class="legende" style="font-size:1.05rem;margin-bottom:10px">Le propriétaire</span>
+        <p class="note" style="margin-bottom:14px">Pour que nous puissions faire notre travail, il nous faut son nom et son numéro. <strong>Demandez-lui d'abord son accord</strong>&nbsp;— c'est la condition de la prime, et c'est ce qui fait que l'appel se passe bien.</p>
 
-      <div id="bloc-accord" hidden>
         <div class="phrase">
           « J'ai une conseillère immobilière qui travaille dans le quartier. Si votre projet se précise, je peux lui donner votre numéro pour qu'elle vous appelle&nbsp;? »
         </div>
@@ -316,6 +299,26 @@
           </label>
           <div class="erreur" id="err-atteste">Sans son accord, nous ne pouvons pas utiliser ses coordonnées.</div>
         </div>
+      </div>
+
+      <div class="champ">
+        <fieldset>
+          <legend class="legende">Quand nous l'appellerons, pouvons-nous vous citer&nbsp;?</legend>
+          <span class="note">Dans les deux cas nous lui disons d'où vient l'information&nbsp;— c'est la règle. La seule différence, c'est votre nom.</span>
+          <div class="empile">
+            <input type="radio" name="citation" id="c-oui" value="oui">
+            <label for="c-oui">
+              <b>Oui, vous pouvez me citer</b>
+              <span>«&nbsp;C'est Martine, la gardienne de votre résidence, qui m'a donné votre numéro, avec votre accord.&nbsp;»</span>
+            </label>
+            <input type="radio" name="citation" id="c-non" value="non">
+            <label for="c-non">
+              <b>Non, ne me citez pas</b>
+              <span>«&nbsp;J'ai eu votre numéro par une personne de votre résidence, qui m'a dit que vous étiez d'accord pour que je vous appelle.&nbsp;» Votre nom n'est jamais prononcé.</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="erreur" id="err-citation">Dites-nous si nous pouvons vous citer.</div>
       </div>
 
       <div class="barre-nav">
@@ -386,7 +389,6 @@
   var retenue = document.getElementById("retenue");
   var retenueTxt = document.getElementById("retenue-txt");
   var horsZone = document.getElementById("hors-zone");
-  var blocAccord = document.getElementById("bloc-accord");
   var choisie = null;   // l'adresse validée dans la liste
 
   /* ---------- navigation entre écrans ---------- */
@@ -421,7 +423,7 @@
     return !montre;
   }
 
-  function valide(n){
+  function valide(n, discret){
     var ok = true;
     if (n === 1){
       ok = erreur("err-adresse", !adresse.value.trim()) && ok;
@@ -433,29 +435,30 @@
     if (n === 3){
       ok = erreur("err-prenom", !document.getElementById("prenom").value.trim()) && ok;
       ok = erreur("err-tel", !document.getElementById("tel").value.trim()) && ok;
-      var p = form.querySelector("input[name=proprio]:checked");
-      ok = erreur("err-proprio", !p) && ok;
-      if (p && p.value === "accord"){
-        ok = erreur("err-pnom", !document.getElementById("p-nom").value.trim()) && ok;
-        ok = erreur("err-ptel", !document.getElementById("p-tel").value.trim()) && ok;
-        ok = erreur("err-atteste", !document.getElementById("atteste").checked) && ok;
-      }
+      // Les coordonnées du propriétaire sont demandées dans tous les cas ;
+      // son accord préalable est la condition de la prime (convention, art. 5).
+      ok = erreur("err-pnom", !document.getElementById("p-nom").value.trim()) && ok;
+      ok = erreur("err-ptel", !document.getElementById("p-tel").value.trim()) && ok;
+      ok = erreur("err-atteste", !document.getElementById("atteste").checked) && ok;
+      ok = erreur("err-citation", !form.querySelector("input[name=citation]:checked")) && ok;
     }
-    if (!ok){
+    if (!ok && !discret){
       var prem = ecrans[n].querySelector(".erreur.on");
       if (prem) prem.scrollIntoView({block:"center", behavior:"smooth"});
     }
     return ok;
   }
 
-  /* ---------- le bloc « il est d'accord » ---------- */
-  form.addEventListener("change", function(e){
-    if (e.target.name === "proprio"){
-      blocAccord.hidden = (e.target.value !== "accord");
-    }
-    sauve();
-  });
-  form.addEventListener("input", sauve);
+  // Une fois qu'une erreur est affichée, elle disparaît dès que le champ est
+  // corrigé — sans faire sauter la page sous les doigts.
+  function relit(){
+    var actif = document.querySelector(".ecran.actif");
+    if (!actif || !actif.querySelector(".erreur.on")) return;
+    valide(parseInt(actif.id.replace("ecran", ""), 10), true);
+  }
+
+  form.addEventListener("change", function(){ sauve(); relit(); });
+  form.addEventListener("input", function(){ sauve(); relit(); });
 
   /* ---------- autocomplétion Base Adresse Nationale ---------- */
   var minuteur = null;
@@ -525,8 +528,8 @@
       champs.forEach(function(id){ d[id] = document.getElementById(id).value; });
       var t = form.querySelector("input[name=type]:checked");
       var e = form.querySelector("input[name=etat]:checked");
-      var p = form.querySelector("input[name=proprio]:checked");
-      d.type = t ? t.id : ""; d.etat = e ? e.id : ""; d.proprio = p ? p.id : "";
+      var c = form.querySelector("input[name=citation]:checked");
+      d.type = t ? t.id : ""; d.etat = e ? e.id : ""; d.citation = c ? c.id : "";
       d.atteste = document.getElementById("atteste").checked;
       localStorage.setItem(CLE, JSON.stringify(d));
     }catch(err){ /* navigation privée : on continue sans brouillon */ }
@@ -535,11 +538,10 @@
     try{
       var d = JSON.parse(localStorage.getItem(CLE) || "{}");
       champs.forEach(function(id){ if (d[id]) document.getElementById(id).value = d[id]; });
-      ["type","etat","proprio"].forEach(function(k){
+      ["type","etat","citation"].forEach(function(k){
         if (d[k]){ var el = document.getElementById(d[k]); if (el) el.checked = true; }
       });
       if (d.atteste) document.getElementById("atteste").checked = true;
-      if (d.proprio === "p-accord") blocAccord.hidden = false;
     }catch(err){ /* rien à reprendre */ }
   }
   reprends();
@@ -582,17 +584,14 @@
       ""
     ];
 
-    if (coche("proprio") === "accord"){
-      lignes.push("— LE PROPRIÉTAIRE —");
-      lignes.push("Il est d'accord pour être contacté.");
-      lignes.push("Nom : " + v("p-nom"));
-      lignes.push("Téléphone : " + v("p-tel"));
-      lignes.push("J'atteste lui avoir parlé et avoir son accord : oui");
-    } else {
-      lignes.push("— LE PROPRIÉTAIRE —");
-      lignes.push("Je préfère que vous le contactiez SANS me citer.");
-      lignes.push("Aucune coordonnée transmise.");
-    }
+    lignes.push("— LE PROPRIÉTAIRE —");
+    lignes.push("Nom : " + v("p-nom"));
+    lignes.push("Téléphone : " + v("p-tel"));
+    lignes.push("J'atteste lui avoir parlé et avoir son accord : oui");
+    lignes.push("");
+    lignes.push(coche("citation") === "oui"
+      ? ">>> Vous POUVEZ me citer auprès du propriétaire."
+      : ">>> NE ME CITEZ PAS. Indiquez seulement qu'une personne de la résidence vous a transmis le numéro avec son accord.");
 
     var sujet = "Opportunité " + ref + " — " + (choisie && choisie.city ? choisie.city : v("adresse"));
     var lien = "mailto:contact@idf.immo?subject=" + encodeURIComponent(sujet) +
