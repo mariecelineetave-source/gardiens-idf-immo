@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette — L'espace du gardien</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0E2E52">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  .bandeau-maquette{
+    background:#6B4F26;color:#FBF4E8;padding:11px 0;font-size:.86rem;text-align:center;
+  }
+  .bandeau-maquette strong{color:#fff}
+
+  .accueil-perso{background:var(--ombre);color:#fff;padding:34px 0 30px}
+  .accueil-perso h1{color:#fff;font-size:clamp(1.6rem,4.4vw,2.2rem);margin-bottom:6px}
+  .accueil-perso p{color:#C9DDF2;font-size:.98rem}
+
+  .compteurs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
+  .compteur{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:14px 12px}
+  .compteur .val{font-family:"Fraunces",Georgia,serif;font-size:1.7rem;line-height:1.1;color:#fff;font-variant-numeric:tabular-nums}
+  .compteur .lib{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#9FBBD6;margin-top:5px;display:block}
+  .compteur.or .val{color:var(--or-clair)}
+  .compteur.or{border-color:rgba(201,161,103,.45);background:rgba(201,161,103,.1)}
+
+  .onglets{display:flex;gap:6px;border-bottom:1px solid var(--ligne);margin:30px 0 24px;overflow-x:auto}
+  .onglets a{
+    padding:12px 16px;text-decoration:none;color:var(--mousse);font-size:.95rem;font-weight:600;
+    border-bottom:2px solid transparent;white-space:nowrap;
+  }
+  .onglets a[aria-current]{color:var(--ombre);border-bottom-color:var(--azur)}
+
+  .oppo{
+    background:var(--craie);border:1px solid var(--ligne);border-radius:12px;
+    padding:18px 20px;margin-bottom:12px;box-shadow:var(--ombre-carte);
+  }
+  .oppo .haut{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+  .oppo .ref{font-family:"Fraunces",Georgia,serif;font-size:1.05rem;color:var(--ombre)}
+  .oppo .lieu{font-weight:600;color:var(--encre);margin-top:6px}
+  .oppo .meta{font-size:.86rem;color:var(--mousse);margin-top:4px}
+  .oppo .lien{display:inline-block;margin-top:12px;font-size:.92rem;font-weight:600;text-decoration:none}
+  .oppo .lien::after{content:" →"}
+
+  .etat{
+    display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;
+    font-size:.8rem;font-weight:600;white-space:nowrap;
+  }
+  .etat::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+  .etat.recue     {background:rgba(76,107,138,.12); color:#3C5A78}
+  .etat.encours   {background:rgba(30,136,229,.13); color:var(--azur-fonce)}
+  .etat.mandat    {background:rgba(28,90,158,.14);  color:var(--buis)}
+  .etat.vendue    {background:rgba(140,106,56,.13); color:var(--or)}
+  .etat.prime     {background:#FBF4E8;color:var(--or);border:1px solid var(--or-clair)}
+  .etat.close     {background:var(--parterre);color:var(--mousse)}
+
+  .detail{background:var(--craie);border:1px solid var(--ligne);border-radius:12px;padding:22px 22px 8px;margin-bottom:12px}
+  .detail h3{font-family:"Archivo",system-ui,sans-serif;font-size:1.02rem;font-weight:650;color:var(--ombre);letter-spacing:0}
+  .jalons{list-style:none;margin:20px 0 0;padding:0;position:relative}
+  .jalons::before{content:"";position:absolute;left:9px;top:8px;bottom:24px;width:2px;background:var(--ligne)}
+  .jalons li{position:relative;padding:0 0 22px 34px}
+  .jalons li::before{
+    content:"";position:absolute;left:2px;top:3px;width:16px;height:16px;border-radius:50%;
+    background:var(--craie);border:2px solid var(--ligne);
+  }
+  .jalons li.fait::before{background:var(--azur);border-color:var(--azur)}
+  .jalons li.encours::before{background:var(--craie);border-color:var(--azur);box-shadow:0 0 0 4px rgba(30,136,229,.16)}
+  .jalons li.prime::before{background:var(--or);border-color:var(--or)}
+  .jalons .quoi{font-weight:650;color:var(--ombre);font-size:.97rem}
+  .jalons .quand{font-size:.83rem;color:var(--mousse);margin-top:2px}
+  .jalons .mot{font-size:.9rem;color:var(--mousse);margin-top:6px;font-style:italic}
+  .jalons li.attente .quoi{color:var(--mousse);font-weight:500}
+
+  .prime-carte{
+    background:linear-gradient(160deg,#FFFDF8,#FBF4E8);border:1px solid var(--or-clair);
+    border-radius:12px;padding:20px 22px;margin-bottom:12px;
+  }
+  .prime-carte .montant{font-family:"Fraunces",Georgia,serif;font-size:1.9rem;color:var(--or);line-height:1.1}
+  .prime-carte .quoi{font-size:.9rem;color:var(--mousse);margin-top:6px}
+
+  .vide{text-align:center;padding:40px 20px;color:var(--mousse)}
+  .fiscal{font-size:.88rem;color:var(--mousse);background:var(--parterre);border-radius:10px;padding:14px 16px;margin-top:18px}
+</style>
+</head>
+<body>
+
+<div class="bandeau-maquette">
+  <strong>MAQUETTE</strong> — écrans de démonstration, données fictives. Rien n'est encore branché sur une base.
+</div>
+
+<header class="entete">
+  <div class="conteneur">
+    <a class="logo" href="../index.html">gardiens<span class="pt">.</span>idf<span class="pt">.</span>immo</a>
+    <nav class="nav-p" aria-label="Navigation principale">
+      <a href="#" aria-current="page">Mon espace</a>
+      <a href="../contact.html">Contact</a>
+    </nav>
+    <a class="bouton bouton-1" href="../partager.html">Partager une opportunité</a>
+  </div>
+</header>
+
+<main>
+  <div class="accueil-perso">
+    <div class="conteneur etroit">
+      <h1>Bonjour Martine</h1>
+      <p>Résidence des Tilleuls, Antony · gardienne depuis 2019</p>
+      <div class="compteurs">
+        <div class="compteur"><span class="val">4</span><span class="lib">partagées</span></div>
+        <div class="compteur"><span class="val">2</span><span class="lib">en cours</span></div>
+        <div class="compteur or"><span class="val">1 000 €</span><span class="lib">reçus</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contenu">
+    <div class="conteneur etroit">
+
+      <nav class="onglets" aria-label="Sections">
+        <a href="#" aria-current="page">Mes opportunités</a>
+        <a href="#primes">Mes primes</a>
+        <a href="#profil">Mon profil</a>
+      </nav>
+
+      <!-- ---------- une opportunité dépliée ---------- -->
+      <div class="detail">
+        <div class="oppo-haut" style="display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:flex-start">
+          <div>
+            <div class="ref" style="font-family:Fraunces,Georgia,serif;font-size:1.05rem;color:var(--ombre)">OPP-2026-0417</div>
+            <div class="lieu" style="font-weight:600;margin-top:6px">14 avenue de la Division Leclerc, Antony</div>
+            <div class="meta" style="font-size:.86rem;color:var(--mousse);margin-top:4px">Appartement · bâtiment B, 3<sup>e</sup> étage · partagée le 2 août 2026</div>
+          </div>
+          <span class="etat encours">Contact en cours</span>
+        </div>
+
+        <ul class="jalons">
+          <li class="fait">
+            <div class="quoi">Reçue</div>
+            <div class="quand">2 août 2026, 19:12</div>
+          </li>
+          <li class="fait">
+            <div class="quoi">Qualifiée</div>
+            <div class="quand">3 août 2026, 9:40</div>
+            <div class="mot">« Bien situé, projet crédible. Je m'en occupe. »</div>
+          </li>
+          <li class="encours">
+            <div class="quoi">Contact en cours</div>
+            <div class="quand">5 août 2026</div>
+            <div class="mot">« M. Bernard rappelle après ses vacances, mi-août. Il n'a pas encore décidé de la date. »</div>
+          </li>
+          <li class="attente"><div class="quoi">Projet immobilier</div><div class="quand">à venir</div></li>
+          <li class="attente"><div class="quoi">Vente réalisée</div><div class="quand">à venir</div></li>
+          <li class="attente"><div class="quoi">Prime de 1 000 €</div><div class="quand">à venir</div></li>
+        </ul>
+
+        <p style="font-size:.86rem;color:var(--mousse);border-top:1px solid var(--ligne-fine);padding-top:14px;margin-bottom:16px">
+          Valable jusqu'au 2 août 2028. Vous avez demandé à ne pas être citée&nbsp;: votre nom n'a pas été prononcé.
+        </p>
+      </div>
+
+      <!-- ---------- les autres, repliées ---------- -->
+      <div class="oppo">
+        <div class="haut">
+          <div>
+            <div class="ref">OPP-2026-0388</div>
+            <div class="lieu">3 rue Mounié, Antony</div>
+            <div class="meta">Appartement · partagée le 14 juillet 2026</div>
+          </div>
+          <span class="etat prime">Prime versée</span>
+        </div>
+        <a class="lien" href="#">Voir le détail</a>
+      </div>
+
+      <div class="oppo">
+        <div class="haut">
+          <div>
+            <div class="ref">OPP-2026-0402</div>
+            <div class="lieu">27 rue des Rabats, Antony</div>
+            <div class="meta">Maison · partagée le 26 juillet 2026</div>
+          </div>
+          <span class="etat mandat">Projet immobilier</span>
+        </div>
+        <a class="lien" href="#">Voir le détail</a>
+      </div>
+
+      <div class="oppo">
+        <div class="haut">
+          <div>
+            <div class="ref">OPP-2026-0341</div>
+            <div class="lieu">8 place du Marché, Antony</div>
+            <div class="meta">Appartement · partagée le 2 juin 2026</div>
+          </div>
+          <span class="etat close">Sans suite</span>
+        </div>
+        <p class="meta" style="font-size:.88rem;color:var(--mousse);margin-top:10px">
+          Motif&nbsp;: le propriétaire a renoncé à vendre. Nous vous préviendrons s'il change d'avis&nbsp;— votre partage reste enregistré jusqu'au 2 juin 2028.
+        </p>
+      </div>
+
+      <!-- ---------- les primes ---------- -->
+      <h2 id="primes" style="margin-top:44px">Mes primes</h2>
+
+      <div class="prime-carte">
+        <div class="montant">1 000 €</div>
+        <div class="quoi">OPP-2026-0388 · 3 rue Mounié · versés le 12 août 2026</div>
+      </div>
+
+      <div class="oppo">
+        <div class="haut">
+          <div>
+            <div class="ref" style="color:var(--mousse)">1 000 €</div>
+            <div class="meta">OPP-2026-0402 · 27 rue des Rabats · à venir si la vente se réalise</div>
+          </div>
+          <span class="etat close">En attente</span>
+        </div>
+      </div>
+
+      <div class="fiscal">
+        <strong>Cumul versé en 2026&nbsp;: 1 000 €.</strong> À déclarer sur votre feuille d'impôts (formulaire 2042-C-PRO,
+        bénéfices non commerciaux non professionnels). Nous vous tenons ce compte à jour pour que la question ne vous
+        tombe pas dessus en fin d'année. <a href="../la-prime.html">En savoir plus</a>
+      </div>
+
+      <!-- ---------- le profil ---------- -->
+      <h2 id="profil" style="margin-top:44px">Mon profil</h2>
+      <div class="oppo">
+        <p style="margin:0 0 10px"><strong>Martine D.</strong><br>
+        martine@exemple.fr · 06 12 34 56 78<br>
+        Résidence des Tilleuls, Antony</p>
+        <p class="meta" style="font-size:.88rem;color:var(--mousse)">
+          Coordonnées bancaires&nbsp;: demandées seulement au moment de la première prime. <a href="#">Modifier</a>
+        </p>
+      </div>
+
+      <p style="margin-top:34px;font-size:.9rem;color:var(--mousse)">
+        Une question sur l'une de ces opportunités&nbsp;? <a href="tel:+33660989292">06 60 98 92 92</a> —
+        <a href="sms:+33660989292">SMS</a> — <a href="mailto:contact@idf.immo">contact@idf.immo</a>
+      </p>
+
+    </div>
+  </div>
+</main>
+
+<footer class="pied">
+  <div class="conteneur">
+    <div class="bas" style="margin-top:0;border-top:0;padding-top:0">
+      <span>Maquette — gardiens.idf.immo</span>
+      <span><a href="pilotage.html">Voir la maquette du back-office →</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

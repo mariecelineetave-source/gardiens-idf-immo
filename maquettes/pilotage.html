@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maquette — Le back-office</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0E2E52">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  .bandeau-maquette{background:#6B4F26;color:#FBF4E8;padding:11px 0;font-size:.86rem;text-align:center}
+  .bandeau-maquette strong{color:#fff}
+
+  .tete-pilotage{background:var(--ombre);color:#fff;padding:28px 0 26px}
+  .tete-pilotage h1{color:#fff;font-size:clamp(1.5rem,4vw,2rem)}
+  .tete-pilotage p{color:#C9DDF2;font-size:.95rem;margin-top:8px}
+  .cadran{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:22px}
+  @media (min-width:700px){.cadran{grid-template-columns:repeat(4,1fr)}}
+  .case{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:14px}
+  .case .val{font-family:"Fraunces",Georgia,serif;font-size:1.6rem;color:#fff;line-height:1.1;font-variant-numeric:tabular-nums}
+  .case .lib{font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:#9FBBD6;margin-top:5px;display:block}
+  .case.urgent{border-color:rgba(201,161,103,.5);background:rgba(201,161,103,.12)}
+  .case.urgent .val{color:var(--or-clair)}
+
+  .alerte-rapp{
+    background:#FBF4E8;border:1px solid var(--or-clair);border-left:4px solid var(--or);
+    border-radius:12px;padding:18px 20px;margin:26px 0;
+  }
+  .alerte-rapp .etiq{display:block;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--or);margin-bottom:8px}
+  .alerte-rapp p{color:#5E4520;font-size:.95rem;margin-bottom:10px}
+  .alerte-rapp p:last-child{margin-bottom:0}
+  .alerte-rapp strong{color:#3F2E15}
+
+  .file{border:1px solid var(--ligne);border-radius:12px;overflow:hidden;background:var(--craie);margin-bottom:26px}
+  .ligne{
+    display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;
+    padding:15px 18px;border-bottom:1px solid var(--ligne-fine);
+  }
+  .ligne:last-child{border-bottom:0}
+  .ligne:hover{background:var(--parterre)}
+  .ligne .ref{font-family:"Fraunces",Georgia,serif;font-size:.98rem;color:var(--ombre)}
+  .ligne .lieu{font-weight:600;font-size:.95rem;margin-top:3px}
+  .ligne .qui{font-size:.84rem;color:var(--mousse);margin-top:3px}
+  .ligne .droite{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+  .age{font-size:.78rem;color:var(--mousse);font-variant-numeric:tabular-nums}
+  .age.chaud{color:#A32A2A;font-weight:600}
+
+  .etat{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;font-size:.78rem;font-weight:600;white-space:nowrap}
+  .etat::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+  .etat.recue   {background:rgba(76,107,138,.12);color:#3C5A78}
+  .etat.encours {background:rgba(30,136,229,.13);color:var(--azur-fonce)}
+  .etat.mandat  {background:rgba(28,90,158,.14); color:var(--buis)}
+  .etat.vendue  {background:rgba(140,106,56,.13);color:var(--or)}
+  .etat.close   {background:var(--parterre);color:var(--mousse)}
+
+  .fiche{border:1px solid var(--ligne);border-radius:12px;background:var(--craie);padding:22px;margin-bottom:26px}
+  .fiche h3{font-family:"Archivo",system-ui,sans-serif;font-weight:650;font-size:1.05rem;color:var(--ombre);letter-spacing:0;margin:0 0 4px}
+  .champs{display:grid;gap:2px;margin:16px 0}
+  .champs div{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--ligne-fine);font-size:.93rem}
+  .champs dt{color:var(--mousse)}
+  .champs dd{margin:0;color:var(--encre)}
+  .champs .fort{font-weight:650;color:var(--ombre)}
+
+  .drapeau{
+    display:inline-block;background:rgba(30,136,229,.12);color:var(--azur-fonce);
+    border-radius:6px;padding:3px 9px;font-size:.8rem;font-weight:600;
+  }
+
+  .avancer{border-top:1px solid var(--ligne);margin-top:18px;padding-top:18px}
+  .avancer .titre{font-size:.75rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--mousse);margin-bottom:12px}
+  .choix-statut{display:flex;flex-wrap:wrap;gap:8px}
+  .choix-statut button{
+    font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;
+    padding:11px 16px;min-height:44px;border-radius:999px;
+    border:1.5px solid var(--ligne);background:#fff;color:var(--encre);
+  }
+  .choix-statut button:hover{border-color:var(--azur);color:var(--ombre)}
+  .choix-statut button.suivant{background:var(--azur);border-color:var(--azur);color:#fff}
+  .choix-statut button.fin{color:var(--mousse)}
+  .apres{font-size:.86rem;color:var(--mousse);margin-top:12px;background:var(--parterre);border-radius:8px;padding:11px 13px}
+
+  h2.sec{margin:38px 0 14px;font-size:clamp(1.3rem,3vw,1.7rem);color:var(--ombre)}
+</style>
+</head>
+<body>
+
+<div class="bandeau-maquette">
+  <strong>MAQUETTE</strong> — écrans de démonstration, données fictives. Rien n'est encore branché sur une base.
+</div>
+
+<header class="entete">
+  <div class="conteneur">
+    <a class="logo" href="../index.html">gardiens<span class="pt">.</span>idf<span class="pt">.</span>immo</a>
+    <nav class="nav-p" aria-label="Navigation">
+      <a href="#" aria-current="page">Pilotage</a>
+      <a href="mon-espace.html">Vue gardien</a>
+    </nav>
+    <a class="bouton bouton-2" href="../index.html">Le site public</a>
+  </div>
+</header>
+
+<main>
+  <div class="tete-pilotage">
+    <div class="conteneur">
+      <h1>Pilotage</h1>
+      <p>Jeudi 13 août 2026 — 3 opportunités attendent une réponse de votre part.</p>
+      <div class="cadran">
+        <div class="case urgent"><span class="val">3</span><span class="lib">à qualifier</span></div>
+        <div class="case"><span class="val">7</span><span class="lib">contacts en cours</span></div>
+        <div class="case"><span class="val">2</span><span class="lib">mandats signés</span></div>
+        <div class="case urgent"><span class="val">1</span><span class="lib">prime à verser</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contenu">
+    <div class="conteneur">
+
+      <!-- ---------- le filet anti-oubli ---------- -->
+      <div class="alerte-rapp">
+        <span class="etiq">⚠ Rapprochement automatique</span>
+        <p>Vous venez d'enregistrer la vente du <strong>8 rue Prosper Legouté, Antony — bâtiment A, 2<sup>e</sup> étage</strong>.</p>
+        <p>Une opportunité portant sur ce bien avait été partagée le <strong>4 mars 2025</strong> par <strong>Joëlle M.</strong> (OPP-2025-0112), classée « sans suite » depuis. <strong>Une prime de 1 000 € lui est due.</strong></p>
+        <p style="margin-top:14px">
+          <button class="bouton bouton-1" style="font-size:.92rem;padding:11px 20px;min-height:44px">Créer la prime</button>
+          <button class="bouton bouton-2" style="font-size:.92rem;padding:11px 20px;min-height:44px;margin-left:8px">Ce n'est pas le même bien</button>
+        </p>
+      </div>
+
+      <!-- ---------- la file d'attente ---------- -->
+      <h2 class="sec">À qualifier</h2>
+      <div class="file">
+        <div class="ligne">
+          <div>
+            <div class="ref">OPP-2026-0431</div>
+            <div class="lieu">22 rue de l'Abbaye, Massy</div>
+            <div class="qui">Karim B. — Résidence du Parc · appartement · « c'est décidé »</div>
+          </div>
+          <div class="droite">
+            <span class="etat recue">Reçue</span>
+            <span class="age chaud">il y a 19 h</span>
+          </div>
+        </div>
+        <div class="ligne">
+          <div>
+            <div class="ref">OPP-2026-0430</div>
+            <div class="lieu">5 allée des Peupliers, Antony</div>
+            <div class="qui">Martine D. — Résidence des Tilleuls · maison · « ils en parlent »</div>
+          </div>
+          <div class="droite">
+            <span class="etat recue">Reçue</span>
+            <span class="age">il y a 6 h</span>
+          </div>
+        </div>
+        <div class="ligne">
+          <div>
+            <div class="ref">OPP-2026-0429</div>
+            <div class="lieu">12 rue Velpeau, Antony</div>
+            <div class="qui">Sofia R. — Le Clos Saint-Jean · appartement · « déjà en vente ailleurs »</div>
+          </div>
+          <div class="droite">
+            <span class="etat recue">Reçue</span>
+            <span class="age">il y a 2 h</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- une fiche ouverte ---------- -->
+      <h2 class="sec">OPP-2026-0431 — 22 rue de l'Abbaye, Massy</h2>
+      <div class="fiche">
+        <h3>Ce que le gardien a transmis</h3>
+        <dl class="champs">
+          <div><dt>Le bien</dt><dd class="fort">22 rue de l'Abbaye, 91300 Massy — bât. C, 4<sup>e</sup> étage</dd></div>
+          <div><dt>Type</dt><dd>Appartement · « c'est décidé »</dd></div>
+          <div><dt>Ce qu'il sait</dt><dd>« Ils achètent plus grand vers Palaiseau, ils ont visité deux fois en juillet. Le mari en a parlé à la loge. »</dd></div>
+          <div><dt>Propriétaire</dt><dd class="fort">M. et M<sup>me</sup> Delaunay — 06 •• •• •• 41</dd></div>
+          <div><dt>Accord</dt><dd>✓ attesté par le gardien</dd></div>
+          <div><dt>Citation</dt><dd><span class="drapeau">Vous pouvez citer Karim</span></dd></div>
+          <div><dt>Votre numéro</dt><dd><span class="drapeau">Il le lui a donné — il peut appeler de lui-même</span></dd></div>
+          <div><dt>Le gardien</dt><dd>Karim B. · 06 •• •• •• 07 · karim@exemple.fr · 2 opportunités, 0 prime</dd></div>
+          <div><dt>Antériorité</dt><dd>✓ aucun autre partage sur ce bien, aucun contact antérieur en portefeuille</dd></div>
+        </dl>
+
+        <div class="avancer">
+          <div class="titre">Faire avancer</div>
+          <div class="choix-statut">
+            <button class="suivant">Qualifiée</button>
+            <button>Contact en cours</button>
+            <button class="fin">Déjà en portefeuille</button>
+            <button class="fin">Hors zone</button>
+            <button class="fin">Sans suite</button>
+          </div>
+          <p class="apres">
+            Un e-mail part automatiquement vers Karim, avec le motif que vous aurez écrit.
+            Les fins de parcours sans prime en exigent un&nbsp;: c'est ce qui évite qu'un gardien
+            se croie oublié.
+          </p>
+        </div>
+      </div>
+
+      <!-- ---------- primes ---------- -->
+      <h2 class="sec">Primes à verser</h2>
+      <div class="file">
+        <div class="ligne">
+          <div>
+            <div class="ref">1 000 € — Joëlle M.</div>
+            <div class="lieu">OPP-2025-0112 · 8 rue Prosper Legouté, Antony</div>
+            <div class="qui">Acte signé le 11 août 2026 · à verser avant le 26 août · IBAN manquant</div>
+          </div>
+          <div class="droite">
+            <span class="etat vendue">Vente réalisée</span>
+            <span class="age chaud">J+2</span>
+          </div>
+        </div>
+        <div class="ligne">
+          <div>
+            <div class="ref">1 000 € — Martine D.</div>
+            <div class="lieu">OPP-2026-0388 · 3 rue Mounié, Antony</div>
+            <div class="qui">Versée le 12 août 2026 · cumul 2026 pour ce gardien : 1 000 €</div>
+          </div>
+          <div class="droite">
+            <span class="etat close">Versée</span>
+          </div>
+        </div>
+      </div>
+
+      <p style="font-size:.9rem;color:var(--mousse);margin-top:26px">
+        <a href="mon-espace.html">← Voir la même opportunité côté gardien</a>
+      </p>
+
+    </div>
+  </div>
+</main>
+
+<footer class="pied">
+  <div class="conteneur">
+    <div class="bas" style="margin-top:0;border-top:0;padding-top:0">
+      <span>Maquette — gardiens.idf.immo</span>
+      <span>Écran réservé, jamais accessible à un gardien</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
