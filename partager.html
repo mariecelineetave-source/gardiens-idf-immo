@@ -153,7 +153,7 @@
 </div>
 
 <main>
-<form id="opportunite" novalidate>
+<form id="opportunite" action="https://formsubmit.co/contact@idf.immo" method="POST" novalidate>
 
   <!-- ================= ÉCRAN 1 ================= -->
   <section class="ecran actif" id="ecran1" aria-labelledby="t1">
@@ -322,11 +322,15 @@
         <div class="erreur" id="err-citation">Dites-nous si nous pouvons vous citer.</div>
       </div>
 
+      <div class="alerte" id="echec-envoi">
+        <strong>Votre opportunité n'est pas partie.</strong> La connexion a échoué. Vos réponses sont conservées sur cet appareil&nbsp;: réessayez dans un instant, ou appelez le <a href="tel:+33660989292">06 60 98 92 92</a>.
+      </div>
+
       <div class="barre-nav">
         <button type="button" class="retour" data-va="2">← Revenir</button>
         <button type="submit" class="bouton bouton-1">Envoyer l'opportunité</button>
       </div>
-      <p class="note" style="margin-top:16px">En envoyant, vous acceptez les <a href="conditions-de-la-prime.html">conditions de la prime</a>. Aucune donnée n'est conservée par ce site&nbsp;: votre message part directement à Marie-Céline Etave.</p>
+      <p class="note" style="margin-top:16px">En envoyant, vous acceptez les <a href="conditions-de-la-prime.html">conditions de la prime</a>. Vous recevez aussitôt un e-mail de confirmation avec votre numéro d'opportunité.</p>
     </div>
   </section>
 
@@ -337,7 +341,7 @@
   <div class="conteneur etroit recu">
     <div class="sceau" aria-hidden="true">✓</div>
     <h2 id="t4">C'est parti.</h2>
-    <p>Votre message d'opportunité est prêt dans votre messagerie. <strong>Il ne sera enregistré qu'une fois envoyé</strong>&nbsp;— vérifiez qu'il est bien parti.</p>
+    <p>Votre opportunité est enregistrée. Un e-mail de confirmation vient de partir vers <strong id="adresse-confirmation">votre adresse</strong>&nbsp;— si vous ne le voyez pas, regardez dans les indésirables.</p>
     <div class="ref">
       <span class="etiq">Votre numéro d'opportunité</span>
       <span class="code" id="code-ref">—</span>
@@ -556,6 +560,9 @@
     return "OPP-" + n.getFullYear() + "-" + alea;
   }
 
+  var envoi = form.querySelector("button[type=submit]");
+  var echec = document.getElementById("echec-envoi");
+
   form.addEventListener("submit", function(e){
     e.preventDefault();
     if (!valide(3)) return;
@@ -567,47 +574,76 @@
       return el ? el.value : "";
     };
 
-    var lignes = [
-      "Opportunité " + ref,
-      "",
-      "— LE BIEN —",
-      "Adresse : " + v("adresse"),
-      "Bâtiment / escalier / étage : " + [v("batiment"), v("escalier"), v("etage")].filter(Boolean).join(" / "),
-      "Type : " + coche("type"),
-      "Où en est le projet : " + coche("etat"),
-      "",
-      "Ce que je sais :",
-      v("details") || "(rien de plus)",
-      "",
-      "— MOI —",
-      "Prénom : " + v("prenom"),
-      "Téléphone : " + v("tel"),
-      "E-mail : " + v("email"),
-      "Résidence : " + (v("residence") || "(non communiquée)"),
-      ""
-    ];
-
-    lignes.push("— LE PROPRIÉTAIRE —");
-    lignes.push("Nom : " + v("p-nom"));
-    lignes.push("Téléphone : " + v("p-tel"));
-    lignes.push("J'atteste lui avoir parlé et avoir son accord : oui");
-    lignes.push("");
-    lignes.push(coche("citation") === "oui"
-      ? ">>> Vous POUVEZ me citer auprès du propriétaire."
-      : ">>> NE ME CITEZ PAS. Indiquez seulement qu'une personne de la résidence vous a transmis le numéro avec son accord.");
-
-    var sujet = "Opportunité " + ref + " — " + (choisie && choisie.city ? choisie.city : v("adresse"));
-    var lien = "mailto:contact@idf.immo?subject=" + encodeURIComponent(sujet) +
-               "&body=" + encodeURIComponent(lignes.join("\n"));
-
-    document.getElementById("code-ref").textContent = ref;
-    document.getElementById("date-ref").textContent = "Partagée le " + new Date().toLocaleDateString("fr-FR", {
+    var quand = new Date().toLocaleDateString("fr-FR", {
       day:"numeric", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit"
     });
+    var cite = coche("citation") === "oui";
 
-    try{ localStorage.removeItem(CLE); }catch(err){}
-    window.location.href = lien;
-    va(4);
+    // Le message de confirmation envoyé automatiquement au gardien.
+    var confirmation =
+      "Bonjour " + v("prenom") + ",\n\n" +
+      "Nous avons bien reçu votre opportunité.\n\n" +
+      "Numéro : " + ref + "\n" +
+      "Enregistrée le : " + quand + "\n" +
+      "Bien concerné : " + v("adresse") + "\n\n" +
+      "Ce qui se passe maintenant :\n" +
+      "1. Sous 48 heures ouvrées, nous vous disons si nous donnons suite, et pourquoi.\n" +
+      "2. Nous approchons le propriétaire, en respectant ce que vous avez choisi" +
+      (cite ? " (vous nous avez autorisés à vous citer)." : " (nous ne prononcerons pas votre nom).") + "\n" +
+      "3. Vous êtes tenu au courant par e-mail à chaque étape.\n" +
+      "4. Si la vente se réalise, vous recevez 1 000 € nets, dans les 15 jours suivant la signature chez le notaire.\n\n" +
+      "Conservez ce message : c'est votre preuve d'antériorité si quelqu'un partage le même bien après vous.\n\n" +
+      "Une question ? 06 60 98 92 92 ou contact@idf.immo\n\n" +
+      "Marie-Céline Etave\n" +
+      "gardiens.idf.immo";
+
+    var d = new FormData();
+    d.append("_subject", "Opportunité " + ref + " — " + (choisie && choisie.city ? choisie.city : v("adresse")));
+    d.append("_template", "table");
+    d.append("_captcha", "false");
+    d.append("_autoresponse", confirmation);
+    d.append("email", v("email"));           // sert de destinataire à la confirmation
+    d.append("Référence", ref);
+    d.append("Enregistrée le", quand);
+    d.append("Adresse du bien", v("adresse"));
+    d.append("Bâtiment / escalier / étage", [v("batiment"), v("escalier"), v("etage")].filter(Boolean).join(" / ") || "—");
+    d.append("Type de bien", coche("type"));
+    d.append("Où en est le projet", coche("etat"));
+    d.append("Ce que sait le gardien", v("details") || "—");
+    d.append("Gardien — prénom", v("prenom"));
+    d.append("Gardien — téléphone", v("tel"));
+    d.append("Gardien — résidence", v("residence") || "—");
+    d.append("Propriétaire — nom", v("p-nom"));
+    d.append("Propriétaire — téléphone", v("p-tel"));
+    d.append("Accord du propriétaire", "Attesté par le gardien");
+    d.append("Puis-je citer le gardien", cite ? "OUI — vous pouvez me citer" : "NON — ne me citez pas");
+
+    echec.classList.remove("on");
+    envoi.disabled = true;
+    var texteInitial = envoi.textContent;
+    envoi.textContent = "Envoi en cours…";
+
+    fetch("https://formsubmit.co/ajax/contact@idf.immo", {
+      method: "POST",
+      headers: { "Accept": "application/json" },
+      body: d
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(rep){
+      if (!rep || (rep.success !== "true" && rep.success !== true)) throw new Error("refus du service d'envoi");
+      document.getElementById("code-ref").textContent = ref;
+      document.getElementById("date-ref").textContent = "Partagée le " + quand;
+      document.getElementById("adresse-confirmation").textContent = v("email");
+      try{ localStorage.removeItem(CLE); }catch(err){}
+      va(4);
+    })
+    .catch(function(){
+      // On ne vide surtout pas le brouillon : la saisie doit être récupérable.
+      envoi.disabled = false;
+      envoi.textContent = texteInitial;
+      echec.classList.add("on");
+      echec.scrollIntoView({block:"center", behavior:"smooth"});
+    });
   });
 })();
 </script>

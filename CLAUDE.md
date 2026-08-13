@@ -19,8 +19,18 @@ primes, cadre juridique, phasage — est **tenu hors du dépôt** à la demande 
 Marie-Céline : ce dépôt est public et ce document contient des arbitrages
 internes. Le demander avant toute évolution structurante.
 
-En attendant, le formulaire de `partager.html` compose un message `mailto:` vers
-`contact@idf.immo` — comme le reste de la famille, rien n'est stocké côté site.
+En attendant, le formulaire de `partager.html` **poste réellement** vers
+`https://formsubmit.co/ajax/contact@idf.immo` : Marie-Céline reçoit l'opportunité
+par courriel, et le gardien reçoit immédiatement un accusé de réception grâce au
+champ `_autoresponse`. Rien n'est stocké côté site.
+
+**Ce service exige une activation unique** : au tout premier envoi, FormSubmit
+adresse un courriel de confirmation à `contact@idf.immo` ; tant que le lien qu'il
+contient n'est pas cliqué, aucun message ne passe. Si le formulaire cesse de
+fonctionner, vérifier ce point en premier.
+
+`mentions-legales.html` mentionne ce prestataire : si l'acheminement change, la
+page doit changer avec.
 
 ## Le vocabulaire — règle absolue
 
