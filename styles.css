@@ -323,3 +323,36 @@ td strong{color:var(--ombre)}
 
 /* l'en-tête est collante : les ancres ne doivent pas passer dessous */
 [id]{scroll-margin-top:82px}
+
+/* ---------------- l'interlocutrice ---------------- */
+.interlocutrice{display:grid;gap:26px;align-items:center}
+@media (min-width:760px){.interlocutrice{grid-template-columns:260px 1fr;gap:40px}}
+.portrait{
+  border-radius:14px;overflow:hidden;background:var(--parterre);
+  box-shadow:0 2px 4px rgba(14,46,82,.08), 0 18px 40px -24px rgba(14,46,82,.5);
+  max-width:260px;
+}
+.portrait img{width:100%;height:auto;display:block}
+.interlocutrice .nom{
+  font-family:"Fraunces",Georgia,serif;font-size:clamp(1.5rem,3.2vw,2rem);
+  color:var(--ombre);line-height:1.15;margin-bottom:4px;
+}
+.section-sombre .interlocutrice .nom{color:#fff}
+.interlocutrice .role{
+  font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--azur-fonce);margin-bottom:16px;
+}
+.section-sombre .interlocutrice .role{color:var(--ciel)}
+
+.joindre{display:flex;flex-wrap:wrap;gap:11px;margin-top:22px}
+.joindre a{
+  display:inline-flex;align-items:center;gap:9px;min-height:48px;
+  padding:12px 20px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.97rem;
+  background:var(--craie);border:1.5px solid var(--ligne);color:var(--ombre);
+  transition:border-color .15s ease, transform .15s ease;
+}
+.joindre a:hover{border-color:var(--azur);color:var(--ombre);transform:translateY(-1px)}
+.joindre a.principal{background:var(--azur);border-color:var(--azur);color:#fff}
+.joindre a.principal:hover{background:var(--azur-fonce);border-color:var(--azur-fonce);color:#fff}
+.section-sombre .joindre a{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.28);color:#fff}
+.section-sombre .joindre a:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.55);color:#fff}
