@@ -103,6 +103,13 @@
   .barre-nav .bouton{flex:1;min-width:150px}
   .retour{background:none;border:0;color:var(--mousse);font-family:inherit;font-size:.95rem;cursor:pointer;padding:12px 4px;text-decoration:underline}
 
+  .encart-info{
+    background:rgba(30,136,229,.07);border:1px solid rgba(30,136,229,.28);
+    border-radius:12px;padding:15px 17px;margin:14px 0 22px;
+    font-size:.94rem;line-height:1.6;color:var(--encre);
+  }
+  .encart-info strong{color:var(--ombre)}
+
   .phrase{
     background:var(--parterre);border-radius:12px;padding:18px 20px;margin:6px 0 4px;
     font-family:"Fraunces",Georgia,serif;font-size:1.05rem;line-height:1.5;color:var(--ombre);
@@ -282,7 +289,11 @@
         <div class="phrase">
           « Je connais une conseillère immobilière sérieuse, qui travaille dans le secteur. Si votre projet se précise, je peux lui donner votre numéro pour qu'elle vous appelle&nbsp;? »
         </div>
-        <p class="note" style="margin-bottom:22px">C'est la phrase la plus simple. Tant qu'il n'a pas dit oui, ne nous donnez pas ses coordonnées.</p>
+        <p class="note">C'est la phrase la plus simple. Tant qu'il n'a pas dit oui, ne nous donnez pas ses coordonnées.</p>
+        <div class="encart-info">
+          <strong>Vous pouvez aussi lui donner directement mon numéro</strong> — le 06 60 98 92 92. Beaucoup de gens préfèrent appeler eux-mêmes, quand ils se sentent prêts.
+          Du moment que vous avez partagé l'opportunité ici <strong>avec ses coordonnées</strong>, le rapprochement est fait&nbsp;: c'est votre partage qui compte, et la prime vous revient même si c'est lui qui m'appelle.
+        </div>
 
         <div class="champ">
           <label for="p-nom">Son prénom (ou son nom)</label>
@@ -300,6 +311,13 @@
             <span>Je confirme lui avoir parlé et avoir son accord pour que Marie-Céline Etave le contacte.</span>
           </label>
           <div class="erreur" id="err-atteste">Sans son accord, nous ne pouvons pas utiliser ses coordonnées.</div>
+        </div>
+        <div class="champ">
+          <label for="numero-donne" style="display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-weight:400">
+            <input type="checkbox" id="numero-donne" style="width:22px;height:22px;min-height:0;flex:0 0 auto;margin-top:3px;accent-color:#1E88E5">
+            <span>Je lui ai aussi donné le 06 60 98 92 92&nbsp;: il vous appellera peut-être directement.</span>
+          </label>
+          <span class="note" style="margin:8px 0 0 34px">Cochez si vous lui avez transmis le numéro. Cela évite que l'appel arrive sans qu'on sache d'où il vient.</span>
         </div>
       </div>
 
@@ -539,6 +557,7 @@
       var c = form.querySelector("input[name=citation]:checked");
       d.type = t ? t.id : ""; d.etat = e ? e.id : ""; d.citation = c ? c.id : "";
       d.atteste = document.getElementById("atteste").checked;
+      d.numeroDonne = document.getElementById("numero-donne").checked;
       localStorage.setItem(CLE, JSON.stringify(d));
     }catch(err){ /* navigation privée : on continue sans brouillon */ }
   }
@@ -550,6 +569,7 @@
         if (d[k]){ var el = document.getElementById(d[k]); if (el) el.checked = true; }
       });
       if (d.atteste) document.getElementById("atteste").checked = true;
+      if (d.numeroDonne) document.getElementById("numero-donne").checked = true;
     }catch(err){ /* rien à reprendre */ }
   }
   reprends();
@@ -579,6 +599,7 @@
       day:"numeric", month:"long", year:"numeric", hour:"2-digit", minute:"2-digit"
     });
     var cite = coche("citation") === "oui";
+    var donneNumero = document.getElementById("numero-donne").checked;
 
     // Le message de confirmation envoyé automatiquement au gardien.
     var confirmation =
@@ -591,6 +612,7 @@
       "1. Nous vous répondons en moins de 24 heures : nous vous disons si nous donnons suite, et pourquoi.\n" +
       "2. Nous approchons le propriétaire, en respectant ce que vous avez choisi" +
       (cite ? " (vous nous avez autorisés à vous citer)." : " (nous ne prononcerons pas votre nom).") + "\n" +
+      (donneNumero ? "   (vous lui avez donné mon numéro : s'il appelle de lui-même, votre partage reste enregistré et la prime vous revient)\n" : "") +
       "3. Vous êtes tenu au courant par e-mail à chaque étape.\n" +
       "4. Si la vente se réalise, vous recevez 1 000 € nets, dans les 15 jours suivant la signature chez le notaire.\n\n" +
       "Conservez ce message : c'est votre preuve d'antériorité si quelqu'un partage le même bien après vous.\n\n" +
@@ -617,6 +639,7 @@
     d.append("Propriétaire — nom", v("p-nom"));
     d.append("Propriétaire — téléphone", v("p-tel"));
     d.append("Accord du propriétaire", "Attesté par le gardien");
+    d.append("A reçu votre numéro", donneNumero ? "OUI — il peut vous appeler directement" : "Non");
     d.append("Puis-je citer le gardien", cite ? "OUI — vous pouvez me citer" : "NON — ne me citez pas");
 
     echec.classList.remove("on");
