@@ -256,15 +256,16 @@
 
       <div class="champ">
         <label for="tel">Votre téléphone</label>
-        <span class="note">C'est par là que nous vous tiendrons au courant.</span>
+        <span class="note">Pour que nous puissions vous joindre si nous avons une question.</span>
         <input type="tel" id="tel" name="tel" autocomplete="tel" placeholder="06 12 34 56 78">
         <div class="erreur" id="err-tel">Indiquez un numéro de téléphone.</div>
       </div>
 
       <div class="champ">
         <label for="email">Votre e-mail</label>
-        <span class="note">Facultatif.</span>
+        <span class="note">C'est là que vous recevrez l'accusé de réception, puis le suivi de votre opportunité.</span>
         <input type="email" id="email" name="email" autocomplete="email" placeholder="martine@exemple.fr">
+        <div class="erreur" id="err-email">Indiquez une adresse e-mail : c'est par là que nous vous tiendrons au courant.</div>
       </div>
 
       <div class="champ">
@@ -346,7 +347,7 @@
 
     <div class="suite">
       <div class="frise">
-        <div class="pas"><span class="rond">1</span><div><span class="nom">Reçue</span><br><span class="det">Nous accusons réception par SMS.</span></div></div>
+        <div class="pas"><span class="rond">1</span><div><span class="nom">Reçue</span><br><span class="det">Nous accusons réception par e-mail.</span></div></div>
         <div class="pas"><span class="rond">2</span><div><span class="nom">Qualifiée</span><br><span class="det">Nous vous disons sous 48 h ouvrées si nous prenons la suite.</span></div></div>
         <div class="pas"><span class="rond">3</span><div><span class="nom">Contact en cours</span><br><span class="det">Nous approchons le propriétaire.</span></div></div>
         <div class="pas"><span class="rond">4</span><div><span class="nom">Projet immobilier</span><br><span class="det">Un mandat est signé.</span></div></div>
@@ -435,6 +436,8 @@
     if (n === 3){
       ok = erreur("err-prenom", !document.getElementById("prenom").value.trim()) && ok;
       ok = erreur("err-tel", !document.getElementById("tel").value.trim()) && ok;
+      var mail = document.getElementById("email").value.trim();
+      ok = erreur("err-email", !mail || mail.indexOf("@") < 1) && ok;
       // Les coordonnées du propriétaire sont demandées dans tous les cas ;
       // son accord préalable est la condition de la prime (convention, art. 5).
       ok = erreur("err-pnom", !document.getElementById("p-nom").value.trim()) && ok;
@@ -579,7 +582,7 @@
       "— MOI —",
       "Prénom : " + v("prenom"),
       "Téléphone : " + v("tel"),
-      "E-mail : " + (v("email") || "(non communiqué)"),
+      "E-mail : " + v("email"),
       "Résidence : " + (v("residence") || "(non communiquée)"),
       ""
     ];

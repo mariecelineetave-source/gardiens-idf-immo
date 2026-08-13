@@ -55,6 +55,7 @@ les 8 pages départementales, ainsi que le document de référence tenu hors dé
 | Vente par un autre conseiller du réseau | **Prime due quand même** |
 | Nom du gardien communiqué | **Jamais sans son accord**, opportunité par opportunité |
 | Zone | **Île-de-France uniquement** (75, 77, 78, 91, 92, 93, 94, 95) |
+| Canal de suivi | **E-mail** (arbitré le 13 août 2026) — l'adresse est donc obligatoire dans le formulaire |
 
 **Le plafond ayant été supprimé, l'information fiscale n'est pas optionnelle.**
 Elle doit rester visible sur `la-prime.html` et `vos-questions.html` : revenu
@@ -146,7 +147,5 @@ en attendant.
   son **article 2 fonde le caractère occasionnel sur un plafond de 3 ventes par
   an**. Ce plafond ayant été supprimé ici, cet article doit être réécrit. C'est le
   point précis à soumettre au juriste.
-- **Canal de notification** : SMS (coût et enregistrement d'expéditeur) ou e-mail ?
-  Le site annonce aujourd'hui un accusé de réception par SMS.
 - **Hébergement de la partie applicative** (espace personnel + back-office), qui ne
   peut pas vivre sur GitHub Pages.
