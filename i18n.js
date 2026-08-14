@@ -84,6 +84,15 @@
     if (L === "fr") return;
 
     document.documentElement.lang = L;
+
+    // La page traduite est sa propre référence : sans cela, elle déclarerait
+    // que l'original français fait foi, ce qui contredit les balises hreflang
+    // et fait ignorer la traduction par les moteurs de recherche.
+    const canon = document.querySelector('link[rel="canonical"]');
+    if (canon && canon.href.indexOf("lang=") === -1) {
+      canon.href = canon.href.split("#")[0] + "?lang=" + L;
+    }
+
     if (window.TITRE && window.TITRE[L]) document.title = window.TITRE[L];
     else if (dico[normalise(document.title)]) document.title = dico[normalise(document.title)];
 
