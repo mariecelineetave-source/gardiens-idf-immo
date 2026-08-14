@@ -356,3 +356,20 @@ td strong{color:var(--ombre)}
 .joindre a.principal:hover{background:var(--azur-fonce);border-color:var(--azur-fonce);color:#fff}
 .section-sombre .joindre a{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.28);color:#fff}
 .section-sombre .joindre a:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.55);color:#fff}
+
+/* ---------------- sélecteur de langue ---------------- */
+.langues{
+  border-top:1px solid var(--ligne-fine);
+  background:rgba(220,232,244,.5);
+}
+.langues .conteneur{display:flex;gap:8px;align-items:center;padding-top:7px;padding-bottom:7px}
+.langues a{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:999px;text-decoration:none;
+  font-size:.84rem;font-weight:600;color:var(--mousse);
+  border:1px solid transparent;line-height:1.4;
+}
+.langues a:hover{color:var(--ombre);border-color:var(--ligne);background:var(--craie)}
+.langues a[aria-current]{color:var(--ombre);background:#fff;border-color:var(--ligne)}
+.langues .drapeau{font-size:1.05rem}
+@media (max-width:520px){ .langues a .mot{display:none} .langues a{padding:6px 11px} }
