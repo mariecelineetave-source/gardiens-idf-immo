@@ -4,6 +4,13 @@
 -- À coller tel quel dans Supabase : projet → SQL Editor → New query → Run.
 -- Le script est rejouable : il ne casse rien s'il est exécuté deux fois.
 --
+-- Réglages attendus à la création du projet Supabase :
+--   Enable Data API .................. coché
+--   Automatically expose new tables .. DÉCOCHÉ  (rien n'est accessible par défaut)
+--   Enable automatic RLS ............. COCHÉ    (aucune table sans son verrou)
+-- Le bloc 10 ci-dessous accorde donc explicitement, table par table, le strict
+-- nécessaire. Toute table ajoutée plus tard devra recevoir le même traitement.
+--
 -- Principe directeur : un gardien ne peut voir que ses propres opportunités.
 -- Ce n'est pas l'application qui le garantit, c'est la base elle-même
 -- (Row Level Security). Même quelqu'un qui récupérerait la clé publique du
@@ -349,7 +356,44 @@ create policy admin_gere_les_primes on primes
   for all using (est_admin()) with check (est_admin());
 
 -- ---------------------------------------------------------------------
--- 9. Après l'exécution
+-- 10. LES ACCÈS AU NIVEAU DES TABLES
+--
+--     « Automatically expose new tables » étant décoché, rien n'est joignable
+--     par l'API tant qu'on ne l'a pas accordé ici. Deux verrous successifs :
+--     ce bloc dit QUELLES TABLES sont visibles, les règles du bloc 8 disent
+--     QUELLES LIGNES le sont.
+--
+--     Le rôle « anon » (visiteur non connecté) ne reçoit rien du tout : il ne
+--     peut que demander un lien de connexion.
+-- ---------------------------------------------------------------------
+grant usage on schema public to anon, authenticated;
+
+grant select, insert, update on gardiens     to authenticated;
+grant select, insert          on opportunites to authenticated;
+grant select                  on evenements   to authenticated;
+grant select                  on primes       to authenticated;
+
+-- Le conseiller passe par le même rôle « authenticated » : c'est la fonction
+-- est_admin() qui lui ouvre l'écriture, pas un privilège de table.
+grant update, delete on opportunites   to authenticated;
+grant insert         on evenements     to authenticated;
+grant all            on notes_internes to authenticated;
+grant all            on primes         to authenticated;
+grant select         on administrateurs to authenticated;
+grant usage          on sequence evenements_id_seq     to authenticated;
+grant usage          on sequence notes_internes_id_seq to authenticated;
+grant usage          on sequence numero_opportunite    to authenticated;
+
+grant execute on function est_admin()        to authenticated;
+grant execute on function anteriorite(text)  to authenticated;
+grant execute on function cumul_annuel(uuid, integer) to authenticated;
+
+-- rapprocher() reste hors de portée : elle révèle l'identité des gardiens.
+-- Elle ne s'appelle que depuis le back-office, via une fonction de bord.
+revoke execute on function rapprocher(text) from anon, authenticated;
+
+-- ---------------------------------------------------------------------
+-- 11. Après l'exécution
 --
 --   a) Se connecter une première fois sur le site avec contact@idf.immo,
 --      puis se déclarer administratrice :
@@ -366,4 +410,8 @@ create policy admin_gere_les_primes on primes
 --   c) Planifier l'effacement des opportunités sans suite (extension pg_cron) :
 --
 --        select cron.schedule('purge', '0 4 * * *', 'select purger_expirees()');
+--
+--   d) Si une requête renvoie « permission denied for table … », c'est qu'une
+--      autorisation manque au bloc 10 — et non que les règles d'accès sont
+--      mal écrites. Les deux verrous se diagnostiquent séparément.
 -- ---------------------------------------------------------------------
