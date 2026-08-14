@@ -17,6 +17,13 @@ du programme, mentions légales et 8 pages départementales.
 Aucune dépendance en dehors des polices Google Fonts. Le site reste lisible et les
 liens d'appel fonctionnent sans JavaScript.
 
+## ⚠️ Avant d'ouvrir le réseau
+
+**L'envoi d'e-mails doit être branché sur un vrai expéditeur** (Brevo ou
+équivalent) avant toute diffusion aux gardiens. L'envoi inclus dans Supabase est
+limité à quelques messages par heure : au-delà, les liens de connexion et les
+accusés de réception ne partent tout simplement pas. Détail dans `CLAUDE.md`.
+
 ## Ce qui reste à construire
 
 L'**espace personnel** du gardien (mes opportunités, statuts, primes) et le

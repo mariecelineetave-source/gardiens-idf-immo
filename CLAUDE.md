@@ -32,6 +32,26 @@ fonctionner, vérifier ce point en premier.
 `mentions-legales.html` mentionne ce prestataire : si l'acheminement change, la
 page doit changer avec.
 
+## ⚠️ À FAIRE AVANT D'OUVRIR LE RÉSEAU À DE VRAIS GARDIENS
+
+**Brancher un vrai expéditeur d'e-mails.** L'envoi inclus dans Supabase est bridé
+à quelques messages par heure et n'est pas prévu pour un service réel. En l'état,
+le troisième gardien qui demande un lien de connexion dans la même heure ne
+recevra rien — et il n'aura aucun moyen de comprendre pourquoi.
+
+Ce qu'il faut faire : Supabase → Project Settings → Authentication → SMTP
+Settings → activer « Custom SMTP » avec un fournisseur réel. **Brevo** est le
+candidat naturel : français, gratuit jusqu'à 300 messages par jour, donc
+largement au-dessus du volume attendu.
+
+Tant que ce n'est pas fait, le site ne doit pas être diffusé aux gardiens :
+ni QR code en loge, ni annonce dans les groupes professionnels. La promesse
+« vous recevez un accusé de réception » ne serait pas tenue.
+
+**Marie-Céline a demandé le 14 août 2026 qu'on le lui rappelle. Le rappeler à
+chaque fois qu'il est question de diffusion, de QR code, d'affiche ou de
+lancement.**
+
 ## Le vocabulaire — règle absolue
 
 **Le mot « signalement » ne doit apparaître nulle part** : ni dans les textes, ni
