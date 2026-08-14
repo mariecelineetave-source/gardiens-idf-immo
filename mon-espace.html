@@ -97,9 +97,9 @@
   </div>
   <div class="langues">
     <div class="conteneur">
-      <a href="/" aria-current="page"><span class="drapeau">🇫🇷</span><span class="mot">Français</span></a>
-      <a href="pt/"><span class="drapeau">🇵🇹</span><span class="mot">Português</span></a>
-      <a href="en/"><span class="drapeau">🇬🇧</span><span class="mot">English</span></a>
+      <a href="mon-espace.html" aria-current="page"><span class="drapeau">🇫🇷</span><span class="mot">Français</span></a>
+      <a href="mon-espace.html?lang=pt"><span class="drapeau">🇵🇹</span><span class="mot">Português</span></a>
+      <a href="mon-espace.html?lang=en"><span class="drapeau">🇬🇧</span><span class="mot">English</span></a>
     </div>
   </div>
 </header>
@@ -185,25 +185,32 @@
   </div>
 </footer>
 
+<script src="dico-commun.js"></script>
+<script src="dico-mon-espace.js"></script>
+<script src="i18n.js"></script>
 <script src="base/config.js"></script>
 <script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/+esm";
 
 const base = createClient(window.CONFIG_BASE.url, window.CONFIG_BASE.cle);
 
+/* Le texte fabriqué ici est traduit comme celui de la page. */
+const T = window.T || ((s) => s);
+const LOCALE = window.LOCALE || "fr-FR";
+
 /* Les états, tels que le gardien doit les lire. */
 const ETATS = {
-  recue:                ["Reçue",              "recue"],
-  qualifiee:            ["Qualifiée",          "encours"],
-  contact_en_cours:     ["Contact en cours",   "encours"],
-  projet_immobilier:    ["Projet immobilier",  "mandat"],
-  vente_realisee:       ["Vente réalisée",     "vendue"],
-  prime_versee:         ["Prime versée",       "prime"],
-  deja_partagee:        ["Déjà partagée",      "close"],
-  deja_en_portefeuille: ["Déjà en portefeuille","close"],
-  hors_zone:            ["Hors Île-de-France", "close"],
-  sans_suite:           ["Sans suite",         "close"],
-  vendu_ailleurs:       ["Vendu ailleurs",     "close"]
+  recue:                [T("Reçue"),              "recue"],
+  qualifiee:            [T("Qualifiée"),          "encours"],
+  contact_en_cours:     [T("Contact en cours"),   "encours"],
+  projet_immobilier:    [T("Projet immobilier"),  "mandat"],
+  vente_realisee:       [T("Vente réalisée"),     "vendue"],
+  prime_versee:         [T("Prime versée"),       "prime"],
+  deja_partagee:        [T("Déjà partagée"),      "close"],
+  deja_en_portefeuille: [T("Déjà en portefeuille"),"close"],
+  hors_zone:            [T("Hors Île-de-France"), "close"],
+  sans_suite:           [T("Sans suite"),         "close"],
+  vendu_ailleurs:       [T("Vendu ailleurs"),     "close"]
 };
 const PARCOURS = ["recue","qualifiee","contact_en_cours","projet_immobilier","vente_realisee","prime_versee"];
 const EN_COURS = ["recue","qualifiee","contact_en_cours","projet_immobilier"];
@@ -215,7 +222,7 @@ function date(v, avecHeure){
   if (!v) return "";
   const o = { day:"numeric", month:"long", year:"numeric" };
   if (avecHeure){ o.hour = "2-digit"; o.minute = "2-digit"; }
-  return new Date(v).toLocaleDateString("fr-FR", o);
+  return new Date(v).toLocaleDateString(LOCALE, o);
 }
 function texte(el, t){ el.textContent = t; return el; }
 
@@ -227,26 +234,26 @@ $("form-connexion").addEventListener("submit", async (e) => {
   const bouton = $("envoyer");
   if (!email || email.indexOf("@") < 1){
     msg.className = "message ko on";
-    msg.textContent = "Indiquez une adresse e-mail valide.";
+    msg.textContent = T("Indiquez une adresse e-mail valide.");
     return;
   }
   bouton.disabled = true;
-  bouton.textContent = "Envoi en cours…";
+  bouton.textContent = T("Envoi en cours…");
   const { error } = await base.auth.signInWithOtp({
     email,
     options: { emailRedirectTo: window.location.origin + "/mon-espace.html" }
   });
   bouton.disabled = false;
-  bouton.textContent = "Recevoir mon lien de connexion";
+  bouton.textContent = T("Recevoir mon lien de connexion");
   if (error){
     msg.className = "message ko on";
-    msg.textContent = "L'envoi n'a pas fonctionné. Réessayez dans un instant, ou appelez le 06 60 98 92 92.";
+    msg.textContent = T("L'envoi n'a pas fonctionné. Réessayez dans un instant, ou appelez le 06 60 98 92 92.");
     return;
   }
   msg.className = "message ok on";
-  msg.innerHTML = "<strong>C'est envoyé.</strong> Ouvrez le message reçu à <strong>" +
-                  email.replace(/[<>&]/g, "") + "</strong> et cliquez sur le lien qu'il contient. " +
-                  "S'il n'arrive pas, regardez dans les indésirables.";
+  msg.innerHTML = T("<strong>C'est envoyé.</strong> Ouvrez le message reçu à <strong>{email}</strong> " +
+                    "et cliquez sur le lien qu'il contient. S'il n'arrive pas, regardez dans les indésirables.")
+                  .replace("{email}", email.replace(/[<>&]/g, ""));
 });
 
 $("deconnexion").addEventListener("click", async () => {
@@ -268,7 +275,7 @@ async function ouvrir(session){
     fiche = data || { prenom, email: utilisateur.email };
   }
 
-  texte($("salut"), "Bonjour " + (fiche.prenom || ""));
+  texte($("salut"), T("Bonjour") + " " + (fiche.prenom || ""));
   texte($("sous-salut"), [fiche.residence, fiche.commune].filter(Boolean).join(", ") || fiche.email);
 
   const [{ data: opportunites }, { data: primes }] = await Promise.all([
@@ -283,7 +290,7 @@ async function ouvrir(session){
 
   texte($("n-total"), String(opps.length));
   texte($("n-cours"), String(opps.filter(o => EN_COURS.includes(o.statut)).length));
-  texte($("n-primes"), total.toLocaleString("fr-FR") + " €");
+  texte($("n-primes"), total.toLocaleString(LOCALE) + " €");
 
   // --- les opportunités ---
   const liste = $("liste");
@@ -291,8 +298,9 @@ async function ouvrir(session){
   if (!opps.length){
     const v = document.createElement("div");
     v.className = "vide";
-    v.innerHTML = "<p>Vous n'avez pas encore partagé d'opportunité.</p>" +
-                  '<p style="margin-top:14px"><a class="bouton bouton-1" href="partager.html">Partager une opportunité</a></p>';
+    v.innerHTML = "<p>" + T("Vous n'avez pas encore partagé d'opportunité.") + "</p>" +
+                  '<p style="margin-top:14px"><a class="bouton bouton-1" href="partager.html">' +
+                  T("Partager une opportunité") + "</a></p>";
     liste.appendChild(v);
   } else {
     for (const o of opps) liste.appendChild(await carte(o));
@@ -308,24 +316,27 @@ async function ouvrir(session){
       if (p.statut === "versee"){
         d.className = "prime-carte";
         d.innerHTML = '<div class="montant"></div><div class="quoi"></div>';
-        texte(d.querySelector(".montant"), p.montant_euros.toLocaleString("fr-FR") + " €");
-        texte(d.querySelector(".quoi"), "Versée le " + date(p.versee_le));
+        texte(d.querySelector(".montant"), p.montant_euros.toLocaleString(LOCALE) + " €");
+        texte(d.querySelector(".quoi"), T("Versée le") + " " + date(p.versee_le));
       } else {
         d.className = "oppo";
         d.innerHTML = '<div class="haut"><div><div class="ref"></div><div class="meta"></div></div>' +
-                      '<span class="etat close">En attente</span></div>';
-        texte(d.querySelector(".ref"), p.montant_euros.toLocaleString("fr-FR") + " €");
-        texte(d.querySelector(".meta"), p.statut === "a_verser" ? "À verser" : "À venir si la vente se réalise");
+                      '<span class="etat close"></span></div>';
+        texte(d.querySelector(".etat"), T("En attente"));
+        texte(d.querySelector(".ref"), p.montant_euros.toLocaleString(LOCALE) + " €");
+        texte(d.querySelector(".meta"), T(p.statut === "a_verser" ? "À verser" : "À venir si la vente se réalise"));
       }
       lp.appendChild(d);
     }
     const annee = new Date().getFullYear();
     const cumul = versees.filter(p => p.versee_le && new Date(p.versee_le).getFullYear() === annee)
                          .reduce((s, p) => s + p.montant_euros, 0);
-    $("fiscal").innerHTML = "<strong>Cumul versé en " + annee + " : " + cumul.toLocaleString("fr-FR") + " €.</strong> " +
-      "À déclarer sur votre feuille d'impôts (formulaire 2042-C-PRO, bénéfices non commerciaux non professionnels). " +
-      'Nous tenons ce compte à jour pour que la question ne vous tombe pas dessus en fin d\'année. ' +
-      '<a href="la-prime.html">En savoir plus</a>';
+    $("fiscal").innerHTML =
+      T("<strong>Cumul versé en {annee} : {cumul} €.</strong> À déclarer sur votre feuille d'impôts " +
+        "(formulaire 2042-C-PRO, bénéfices non commerciaux non professionnels). Nous tenons ce compte à jour " +
+        "pour que la question ne vous tombe pas dessus en fin d'année.")
+       .replace("{annee}", annee).replace("{cumul}", cumul.toLocaleString(LOCALE)) +
+      ' <a href="la-prime.html">' + T("En savoir plus") + "</a>";
   }
 
   montre("ecran-espace");
@@ -343,7 +354,7 @@ async function carte(o){
   const lieu = texte(document.createElement("div"), o.adresse_saisie); lieu.className = "lieu";
   const meta = texte(document.createElement("div"),
     [o.type_bien, [o.batiment, o.escalier, o.etage].filter(Boolean).join(" · "),
-     "partagée le " + date(o.partagee_le)].filter(Boolean).join(" · "));
+     T("partagée le") + " " + date(o.partagee_le)].filter(Boolean).join(" · "));
   meta.className = "meta";
   g.appendChild(lieu); g.appendChild(meta);
   const chip = texte(document.createElement("span"), libelle);
@@ -364,7 +375,7 @@ async function carte(o){
       const ev = (evenements || []).find(e => e.statut === etape);
       const quoi = texte(document.createElement("div"), ETATS[etape][0]); quoi.className = "quoi";
       const quand = texte(document.createElement("div"),
-        ev ? date(ev.cree_le, true) : (i <= atteint ? "" : "à venir")); quand.className = "quand";
+        ev ? date(ev.cree_le, true) : (i <= atteint ? "" : T("à venir"))); quand.className = "quand";
       li.appendChild(quoi); li.appendChild(quand);
       if (ev && ev.message){
         const mot = texte(document.createElement("div"), "« " + ev.message + " »"); mot.className = "mot";
@@ -374,13 +385,13 @@ async function carte(o){
     });
     d.appendChild(ul);
   } else if (o.motif){
-    const m = texte(document.createElement("div"), "Motif : " + o.motif);
+    const m = texte(document.createElement("div"), T("Motif :") + " " + o.motif);
     m.className = "motif";
     d.appendChild(m);
   }
 
   if (o.expire_le){
-    const e = texte(document.createElement("div"), "Enregistrée jusqu'au " + date(o.expire_le) + ".");
+    const e = texte(document.createElement("div"), T("Enregistrée jusqu'au") + " " + date(o.expire_le) + ".");
     e.className = "meta"; e.style.marginTop = "12px";
     d.appendChild(e);
   }
@@ -403,7 +414,7 @@ function rate(e){
   montre("ecran-connexion");
   const msg = $("message-connexion");
   msg.className = "message ko on";
-  msg.textContent = "Vos opportunités n'ont pas pu être chargées. Réessayez, ou appelez le 06 60 98 92 92.";
+  msg.textContent = T("Vos opportunités n'ont pas pu être chargées. Réessayez, ou appelez le 06 60 98 92 92.");
 }
 </script>
 </body>

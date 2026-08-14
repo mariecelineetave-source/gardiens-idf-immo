@@ -108,6 +108,36 @@ programme crédible.
 - `ile-de-france/*.html` — 8 pages départementales (SEO local).
 - `styles.css` — feuille commune. `site.js` — barre d'action mobile.
 - `CNAME`, `robots.txt`, `sitemap.xml`.
+- `i18n.js` + `dico-*.js` — le multilingue (voir ci-dessous).
+
+## Le multilingue — français, portugais, anglais
+
+Beaucoup de gardiens d'Île-de-France sont lusophones. Le site existe donc en
+trois langues, **sans jamais dupliquer une page** : chaque fichier reste écrit en
+français et se traduit à l'affichage. C'est la règle qui empêche qu'un montant ou
+un délai corrigé une fois se mette à diverger d'une langue à l'autre.
+
+- **`i18n.js`** — le moteur commun. Il lit `?lang=pt` ou `?lang=en`, remplace les
+  nœuds de texte, traduit le titre, met `<html lang>` à jour, et **réécrit les
+  liens internes** pour que la navigation reste dans la langue choisie.
+- **`dico-commun.js`** — en-tête, bandeau final, pied de page. Chargé partout.
+- **`dico-<page>.js`** — le texte propre à une page. `dico-departement.js` sert
+  les huit pages départementales à lui seul.
+- Chaque entrée est un **triplet `[français, portugais, anglais]`**. La clé
+  française doit être **exactement** le texte du fichier HTML (les espaces sont
+  normalisés, l'insécable compte comme une espace).
+- **Un texte coupé par un `<strong>` fait plusieurs entrées** : traduire chaque
+  morceau de façon que le recollage donne une phrase correcte.
+- `window.T("…")` traduit une chaîne fabriquée en JavaScript
+  (`mon-espace.html`) ; `window.LOCALE` donne la locale des dates et des nombres.
+- Exceptions volontaires : `index.html` a de vraies pages traduites
+  (`pt/index.html`, `en/index.html`) pour le référencement ; `partager.html`
+  garde `traductions.js` et les deux pages juridiques `traductions-juridiques.js`,
+  qui ajoute le bandeau **« seule la version française fait foi »**.
+
+**Quand on ajoute ou modifie une phrase sur une page traduite, on met à jour son
+dictionnaire dans la foulée** — sinon la phrase ressort en français au milieu du
+portugais.
 
 ## Palette
 
