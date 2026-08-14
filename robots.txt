@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /maquettes/
+Disallow: /base/
 
 Sitemap: https://gardiens.idf.immo/sitemap.xml
