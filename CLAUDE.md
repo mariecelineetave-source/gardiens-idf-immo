@@ -219,3 +219,20 @@ en attendant.
   point précis à soumettre au juriste.
 - **Hébergement de la partie applicative** (espace personnel + back-office), qui ne
   peut pas vivre sur GitHub Pages.
+
+## Le formulaire passe par FormSubmit — activation PAR SITE
+
+`partager.html` envoie l'opportunité à `contact@idf.immo` via FormSubmit. Ce
+service exige une **activation à la première soumission de chaque site** : il
+envoie un e-mail contenant un lien « Activate Form », et tant que personne n'a
+cliqué, **rien ne part**.
+
+**Fait pour ce site le 22 août 2026** — vérifié : « Form Activated ».
+
+Aucun des cinq sites de la famille n'était activé avant cette date : depuis
+leur mise en ligne, aucun formulaire n'aurait transmis quoi que ce soit. Un
+nouveau site devra refaire cette activation, et son premier envoi de test
+échouera : c'est normal, il déclenche justement l'e-mail.
+
+FormSubmit est **injoignable depuis les sessions Claude** (le proxy réseau le
+bloque) : ce test ne peut être fait que depuis un vrai navigateur.
