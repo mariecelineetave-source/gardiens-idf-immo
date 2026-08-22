@@ -19,10 +19,9 @@ liens d'appel fonctionnent sans JavaScript.
 
 ## ⚠️ Avant d'ouvrir le réseau
 
-**L'envoi d'e-mails doit être branché sur un vrai expéditeur** (Brevo ou
-équivalent) avant toute diffusion aux gardiens. L'envoi inclus dans Supabase est
-limité à quelques messages par heure : au-delà, les liens de connexion et les
-accusés de réception ne partent tout simplement pas. Détail dans `CLAUDE.md`.
+**L'envoi d'e-mails est branché sur un vrai expéditeur** (Brevo), vérifié le
+22 août 2026 : les liens de connexion partent vers n'importe quelle adresse, et
+non plus seulement vers les membres du projet Supabase. Détail dans `CLAUDE.md`.
 
 ## Ce qui reste à construire
 

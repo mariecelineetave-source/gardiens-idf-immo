@@ -39,14 +39,24 @@ page doit changer avec.
 le troisième gardien qui demande un lien de connexion dans la même heure ne
 recevra rien — et il n'aura aucun moyen de comprendre pourquoi.
 
-Ce qu'il faut faire : Supabase → Project Settings → Authentication → SMTP
-Settings → activer « Custom SMTP » avec un fournisseur réel. **Brevo** est le
-candidat naturel : français, gratuit jusqu'à 300 messages par jour, donc
-largement au-dessus du volume attendu.
+C'est fait. L'expéditeur personnalisé est **en place**, vérifié le 22 août 2026 depuis
+l'extérieur : trois demandes de lien de connexion consécutives vers une adresse
+qui n'est PAS membre du projet Supabase ont été acceptées. Sans expéditeur
+personnalisé, la première aurait été refusée (« Email address not authorized »)
+et le plafond serait de deux messages par heure. La méthode de vérification, à
+rejouer si le doute revient :
 
-Tant que ce n'est pas fait, le site ne doit pas être diffusé aux gardiens :
-ni QR code en loge, ni annonce dans les groupes professionnels. La promesse
-« vous recevez un accusé de réception » ne serait pas tenue.
+```
+curl -s -w '\nHTTP %{http_code}\n' -X POST \
+  "https://uiciolavnalimrjlpesx.supabase.co/auth/v1/otp" \
+  -H "apikey: sb_publishable_rCVYAzc9PyppEfijDMdHzg_C--mKXj1" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"verification-smtp@idf.immo"}'
+```
+
+**200** = un expéditeur personnalisé répond. **« Email address not authorized »**
+= on est retombé sur l'envoi inclus de Supabase, et plus rien ne part vers les
+prescripteurs.
 
 **Marie-Céline a demandé le 14 août 2026 qu'on le lui rappelle. Le rappeler à
 chaque fois qu'il est question de diffusion, de QR code, d'affiche ou de
