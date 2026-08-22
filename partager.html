@@ -92,6 +92,10 @@
   .retenue b{color:var(--ombre)}
   .retenue button{background:none;border:0;color:var(--azur-fonce);font-family:inherit;font-size:.88rem;cursor:pointer;text-decoration:underline;padding:0;margin-top:3px}
 
+  .detail-technique{
+    display:none; margin-top:8px; font-size:.85rem; opacity:.85;
+  }
+  .detail-technique.on{ display:block }
   .alerte{
     display:none;margin-top:12px;padding:14px 16px;border-radius:10px;
     background:#FBF4E8;border:1px solid var(--or-clair);color:#6B4F26;font-size:.94rem;
@@ -351,6 +355,7 @@
 
       <div class="alerte" id="echec-envoi">
         <strong>Votre opportunité n'est pas partie.</strong> La connexion a échoué. Vos réponses sont conservées sur cet appareil&nbsp;: réessayez dans un instant, ou appelez le <a href="tel:+33660989292">06 60 98 92 92</a>.
+              <span id="echec-detail" class="detail-technique"></span>
       </div>
 
       <div class="barre-nav">
@@ -670,14 +675,27 @@
     })
     .then(function(r){ return r.json(); })
     .then(function(rep){
-      if (!rep || (rep.success !== "true" && rep.success !== true)) throw new Error("refus du service d'envoi");
+      if (!rep || (rep.success !== "true" && rep.success !== true)) {
+        var refus = new Error((rep && rep.message) ? rep.message : "le service d'envoi a refusé l'envoi");
+        refus.refusDuService = true;
+        throw refus;
+      }
       document.getElementById("code-ref").textContent = ref;
       document.getElementById("date-ref").textContent = "Partagée le " + quand;
       document.getElementById("adresse-confirmation").textContent = v("email");
       try{ localStorage.removeItem(CLE); }catch(err){}
       va(4);
     })
-    .catch(function(){
+    .catch(function(e){
+      // Dire ce qui s'est réellement passé : un refus du service d'envoi et une
+      // panne de réseau ne se corrigent pas de la même façon.
+      var detail = document.getElementById("echec-detail");
+      if (detail){
+        detail.textContent = (e && e.refusDuService)
+          ? "Le service d'envoi a répondu : " + e.message
+          : "La connexion au service d'envoi n'a pas abouti.";
+        detail.classList.add("on");
+      }
       // On ne vide surtout pas le brouillon : la saisie doit être récupérable.
       envoi.disabled = false;
       envoi.textContent = texteInitial;
